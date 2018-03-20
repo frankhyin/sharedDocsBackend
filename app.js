@@ -19,7 +19,6 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -45,11 +44,17 @@ passport.deserializeUser(function(id, done){
   });
 });
 
-passport.use(new LocalStrategy(function(email, password, done){
-  User.findOne({email: email}, function(error, user){
-    if (error){return done(error);}
-    if (!user){return done(null, false);}
-    if (user.password !== password){return done(null, false);}
+passport.use(new LocalStrategy({usernameField: "email", passwordField:"password"}, function(username, password, done){
+  User.findOne({email: username}, function(error, user){
+    if (error) {
+        return done(error);
+    }
+    if (!user) {
+        return done(null, false);
+    }
+    if (user.password !== password){
+        return done(null, false);
+    }
     return done(null, user);
   });
 }));

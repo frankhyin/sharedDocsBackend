@@ -23,13 +23,18 @@ module.exports = function(passport) {
     }
     if (req.body.password !== req.body.password2){
       result.message = "Passwords do not match";
-      return res.status(500).send(result);      
+      return res.status(500).send(result);
+    }
+    if (!req.body.displayName){
+        result.message = "Invalid display name";
+        return res.status(500).send(result);
     }
 
     // Create a new user in the database
     var new_user = new models.User({
       email: req.body.email,
       password: req.body.password,
+      displayName: req.body.displayName
     });
     new_user.save(function(error, user) {
       if (error) {
@@ -37,7 +42,7 @@ module.exports = function(passport) {
         result.error = error;
         return res.status(500).send(result);
       }
-      
+
       // Successful Database Registration
       result.success = true;
       result.message = "Account Created Successfully";
@@ -46,7 +51,7 @@ module.exports = function(passport) {
   });
 
   router.post('/login', passport.authenticate('local'), function(req, res) {
-    
+
     // This code will only hit after passport has successfully
     // authenticated the user -> respond with success message
     var result = {};
