@@ -25,7 +25,7 @@ router.post('/doc/:id/share', function(req, res, next){
   // req.body.emails - a list of email strings to invite to doc
 
   // optional - send an email to each recipient with an invite link
-  
+
   // search for id of each email
   var promises = [];
   req.body.emails.forEach(function(email){
@@ -80,7 +80,7 @@ router.post('/doc/:id', function(req, res, next){
     title: req.body.title,
     content: req.body.content,
     lastModified: Date()
-    // add collaborators too 
+    // add collaborators too
   }).then(function(error){
     // do something?
     res.send();

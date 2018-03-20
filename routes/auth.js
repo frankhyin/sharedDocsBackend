@@ -5,7 +5,7 @@ var models = require('../models/models');
 
 module.exports = function(passport) {
 
-  router.post('/signup', function(req, res){
+  router.post('/register', function(req, res){
 
     var result = {};
     result.success = false;
