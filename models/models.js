@@ -1,9 +1,10 @@
 var mongoose = require('mongoose');
 var connect = process.env.MONGODB_URI;
+var Schema = mongoose.Schema;
 
 mongoose.connect(connect);
 
-var userSchema = mongoose.Schema({
+var userSchema = Schema({
     email: {
         type: String,
         required: true
@@ -18,9 +19,36 @@ var userSchema = mongoose.Schema({
     }
 });
 
+var documentSchema = Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    content: {
+        type: String,
+        required: true
+    },
+    dateCreated: {
+        type: Date,
+        required: true
+    },
+    lastModified: {
+        type: Date,
+        required: true
+    },
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    collaborators: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'        
+    }]
+});
 
 
 var User = mongoose.model('User', userSchema);
+var Document = mongoose.model('Document', documentSchema);
 
 
 User.findOrCreate = function (searchObj, createObj, callback){
@@ -38,5 +66,6 @@ User.findOrCreate = function (searchObj, createObj, callback){
 
 module.exports = {
     User: User,
+    Document: Document
   };
   
