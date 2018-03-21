@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "nodemon": "nodemon ./bin/www"
+    "start": "node app.js",
+    "nodemon": "nodemon app.js"
   },
   "dependencies": {
     "body-parser": "^1.13.3",
@@ -16,7 +16,8 @@
     "mongoose": "^5.0.4",
     "morgan": "^1.6.1",
     "passport": "^0.4.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "socket.io": "^2.0.4"
   },
   "devDependencies": {
     "nodemon": "^1.14.12"
