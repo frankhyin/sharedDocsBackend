@@ -35,7 +35,7 @@ app.use(cors());
 
 
 // Passport stuff here
-app.use(session({secret: 'crimsonjade'}));
+app.use(session({secret: 'thedarkestclown'}));
 
 passport.serializeUser(function(user, done){
   done(null, user._id);
