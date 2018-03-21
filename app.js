@@ -7,7 +7,6 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var auth = require('./routes/auth');
 
-
 // require node modules here
 const passport = require('passport');
 const session = require('express-session');
@@ -15,7 +14,10 @@ const LocalStrategy = require('passport-local').Strategy;
 const models = require('./models/models');
 const User = models.User;
 
-var app = express();
+const app = express();
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,7 +35,7 @@ app.use(cors());
 
 
 // Passport stuff here
-app.use(session({secret: 'crimsonjade'}));
+app.use(session({secret: 'thedarkestclown'}));
 
 passport.serializeUser(function(user, done){
   done(null, user._id);
@@ -98,5 +100,33 @@ app.use(function(err, req, res, next) {
   res.send(result);
 });
 
+// Socket Stuff
+const SALT = process.env.SALT;
+if (!SALT){throw "Salt not defined. Did you source env.sh Frank?";}
 
-module.exports = app;
+const sharedDocs = {}
+const currentState = {}
+
+io.on('connection', function (socket) {
+  socket.on('join-document', function (docAuth, cb) {
+    const {docId, userToken} = docAuth;
+
+    let secretToken = sharedDocs[docId];
+    if (!secretToken){
+      secretToken = sharedDocs[docId] = md5(docId + Math.random() + SALT);
+    }
+
+    cb({secretToken, docId, state: currentState[docId]});
+    socket.join(secretToken);
+  });
+
+  socket.on('document-save', function (message) {
+    const {secretToken, state, docId, userToken} = message;
+    currentState[docId] = state;
+    io.sockets.in(secretToken).emit('document-update', {state, docId, userToken});
+  });
+});
+
+
+server.listen(3000);
+console.log("Server listening on port 3000");

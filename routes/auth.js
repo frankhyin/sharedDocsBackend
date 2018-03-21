@@ -59,6 +59,7 @@ module.exports = function(passport) {
     result.email = req.user.email;
     result.displayName = req.user.displayName;
     result.message = "Logged In";
+    result.cookie = req.session.cookie;
     res.send(result);
   });
 
