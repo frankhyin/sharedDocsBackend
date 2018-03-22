@@ -6,17 +6,17 @@ const Document = models.Document;
 
 
 
-router.use(function(req, res, next){
+// router.use(function(req, res, next){
 
-  if (!req.user) {
-    var result = {
-      success: false,
-      message: "Not Authorized"
-    };
-    return res.status(401).send(result);
-  }
-  next();
-});
+//   if (!req.user) {
+//     var result = {
+//       success: false,
+//       message: "Not Authorized"
+//     };
+//     return res.status(401).send(result);
+//   }
+//   next();
+// });
 
 // POST /doc/:id/share
 // receives a list of users by email and invites them to collaborate on
