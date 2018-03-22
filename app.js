@@ -1,7 +1,7 @@
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+// var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
@@ -9,7 +9,7 @@ var auth = require('./routes/auth');
 
 // require node modules here
 const passport = require('passport');
-const session = require('express-session');
+// const session = require('express-session');
 const LocalStrategy = require('passport-local').Strategy;
 const models = require('./models/models');
 const User = models.User;
@@ -18,6 +18,31 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Passport JWT
+const jwt = require('passport-jwt');
+const JwtStrategy = jwt.Strategy;
+const ExtractJwt = jwt.ExtractJwt;
+const opts = {};
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = process.env.JWT_SECRET;
+passport.use('jwt', new JwtStrategy(opts, function(jwt_payload, done){
+  console.log('jwtpayload', jwt_payload);
+  User.findOne({email: jwt_payload.email}, function(error, user){
+    if (error) {
+        return done(error);
+    }
+    if (!user) {
+        return done(null, false);
+    }
+    if (user.password !== jwt_payload.password){
+        return done(null, false);
+    }
+    return done(null, user);
+  });
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,7 +50,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -35,7 +60,7 @@ app.use(cors());
 
 
 // Passport stuff here
-app.use(session({secret: 'thedarkestclown'}));
+// app.use(session({secret: 'thedarkestclown'}));
 
 passport.serializeUser(function(user, done){
   done(null, user._id);
@@ -46,23 +71,20 @@ passport.deserializeUser(function(id, done){
   });
 });
 
-passport.use(new LocalStrategy({usernameField: "email", passwordField:"password"}, function(username, password, done){
-  User.findOne({email: username}, function(error, user){
-    if (error) {
-        return done(error);
-    }
-    if (!user) {
-        return done(null, false);
-    }
-    if (user.password !== password){
-        return done(null, false);
-    }
-    return done(null, user);
-  });
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
+// passport.use(new LocalStrategy({usernameField: "email", passwordField:"password"}, function(username, password, done){
+//   User.findOne({email: username}, function(error, user){
+//     if (error) {
+//         return done(error);
+//     }
+//     if (!user) {
+//         return done(null, false);
+//     }
+//     if (user.password !== password){
+//         return done(null, false);
+//     }
+//     return done(null, user);
+//   });
+// }));
 
 app.use('/', auth(passport));
 app.use('/', routes);

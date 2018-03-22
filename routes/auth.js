@@ -50,7 +50,7 @@ module.exports = function(passport) {
     });
   });
 
-  router.post('/login', passport.authenticate('local'), function(req, res) {
+  router.post('/login', passport.authenticate('jwt'), function(req, res) {
 
     // This code will only hit after passport has successfully
     // authenticated the user -> respond with success message
