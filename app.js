@@ -18,9 +18,6 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-app.use(passport.initialize());
-app.use(passport.session());
-
 // Passport JWT
 const jwt = require('passport-jwt');
 const JwtStrategy = jwt.Strategy;
@@ -60,13 +57,19 @@ app.use(cors());
 
 
 // Passport stuff here
-// app.use(session({secret: 'thedarkestclown'}));
+// app.use(session({secret: process.env.JWT_SECRET}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 passport.serializeUser(function(user, done){
+  console.log('serialize', JSON.stringify(user, 0, 2))
   done(null, user._id);
 });
 passport.deserializeUser(function(id, done){
+  console.log('deserializeUser', JSON.stringify(id, 0, 2))
   User.findById(id, function(error, user){
+    console.log('findById', JSON.stringify(user, 0, 2))
     done(error, user);
   });
 });

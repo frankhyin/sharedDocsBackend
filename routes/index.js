@@ -5,19 +5,6 @@ const User = models.User;
 const Document = models.Document;
 
 
-
-// router.use(function(req, res, next){
-
-//   if (!req.user) {
-//     var result = {
-//       success: false,
-//       message: "Not Authorized"
-//     };
-//     return res.status(401).send(result);
-//   }
-//   next();
-// });
-
 // POST /doc/:id/share
 // receives a list of users by email and invites them to collaborate on
 // this document provided that they have an account
@@ -47,13 +34,18 @@ router.post('/doc/new', function(req, res, next){
   var new_doc = new models.Document({
     title: req.body.title || "Untitled",
     content: "",
-    author: req.user.id,
+    author: req.user._id,
     dateCreated: Date(),
     lastModified: Date(),
-    collaborators: [req.user.id]
+    collaborators: [req.user._id]
   });
   new_doc.save(function(error, doc) {
-    res.send();
+    var result = {success:true};
+    if (error){
+      result.success = false;
+      result.error = error;
+    }
+    res.send(result);
   });
 });
 
@@ -97,6 +89,21 @@ router.delete('/doc/:id', function(req, res, next){
 });
 
 
+router.get('/home', function(req, res, next){
+  Document.find({author: req.user._id}).exec()
+  .then(function(result){
+    res.send({
+      success: true,
+      documents: result
+    });
+  })
+  .catch(function(error){
+    res.send({
+      success: false,
+      error: error
+    });
+  });
+});
 
 
 module.exports = router;

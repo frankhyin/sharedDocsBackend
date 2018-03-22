@@ -63,12 +63,21 @@ module.exports = function(passport) {
     res.send(result);
   });
 
-  // router.post('/home')
-
   router.get('/logout', function(req, res) {
     req.logout();
     res.send({message: 'logged out', success: true})
   });
+  
+  router.use(passport.authenticate('jwt', { session: false }), function(req, res, next){
 
+    if (!req.user) {
+      var result = {
+        success: false,
+        message: "Not Authorized"
+      };
+      return res.status(401).send(result);
+    }
+    next();
+  });
   return router;
 }
