@@ -59,13 +59,15 @@ module.exports = function(passport) {
     result.email = req.user.email;
     result.displayName = req.user.displayName;
     result.message = "Logged In";
-    result.cookie = req.session.cookie;
+    result.cookie = req.cookies;
     res.send(result);
   });
 
+  // router.post('/home')
+
   router.get('/logout', function(req, res) {
     req.logout();
-    res.send({message: "Logged Out"});
+    res.send({message: 'logged out', success: true})
   });
 
   return router;
