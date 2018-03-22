@@ -41,11 +41,11 @@ router.post('/doc/:id/share', function(req, res, next){
 
 });
 
-// POST /doc/:id/new
+// POST /doc/new
 // creates a new document and resonds with the resulting id
-router.post('/doc/:id/new', function(req, res, next){
+router.post('/doc/new', function(req, res, next){
   var new_doc = new models.Document({
-    title: "Untitled",
+    title: req.body.title || "Untitled",
     content: "",
     author: req.user.id,
     dateCreated: Date(),
