@@ -75,7 +75,10 @@ router.post('/doc/:id', function(req, res, next){
     // add collaborators too
   }).then(function(error){
     // do something?
-    res.send();
+    res.send({
+      success: !error,
+      error: error
+    });
   });
 });
 
