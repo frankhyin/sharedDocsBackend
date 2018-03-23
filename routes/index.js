@@ -41,6 +41,7 @@ router.post('/doc/new', function(req, res, next){
   });
   new_doc.save(function(error, doc) {
     var result = {success:true};
+    result.doc = doc;    
     if (error){
       result.success = false;
       result.error = error;
