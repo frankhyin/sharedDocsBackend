@@ -9,6 +9,8 @@ const Document = models.Document;
 // receives a list of users by email and invites them to collaborate on
 // this document provided that they have an account
 router.post('/doc/:id/share', function(req, res, next){
+  const results = { errors: [] };
+
   // req.body.emails - a list of email strings to invite to doc
 
   // optional - send an email to each recipient with an invite link
@@ -16,16 +18,40 @@ router.post('/doc/:id/share', function(req, res, next){
   // search for id of each email
   var promises = [];
   req.body.emails.forEach(function(email){
-    promises.push(User.findOne({email: email})).exec();
+    promises.push(
+      User.findOne({email: email}).exec()
+    );
   });
 
   // after all the promises have completed, update database with new
   // contributors
   Promise.all(promises)
-  .then(function(data){
-    res.send(data);
-  });
+  .then(function(users){
 
+    // update Documents here
+    Document.findById(req.params.id)
+    .then(function(doc, error){
+      users.forEach(function(user){
+        if (user){
+          doc.collaborators.push(user._id);
+        }
+      });
+      return doc.save();
+    })
+    .then(function(result){
+      res.send({
+        success: true,
+        users: users,
+        result: result
+      });
+    });
+  })
+  .catch(function(error){
+    res.send({
+      success: false,
+      error: error
+    })
+  });
 });
 
 // POST /doc/new
@@ -54,7 +80,7 @@ router.post('/doc/new', function(req, res, next){
 // given an document id, retrieves all data for that doc
 // to be displayed on client side
 router.get('/doc/:id', function(req, res, next){
-  Document.findById(req.params.id)
+  Document.findById(req.params.id).populate('author').populate('collaborators')
   .then(function(doc, error){
     // If error, notify user that doc doesn't exist
 
@@ -94,7 +120,9 @@ router.delete('/doc/:id', function(req, res, next){
 
 
 router.get('/home', function(req, res, next){
-  Document.find({author: req.user._id}).exec()
+  Document.find({author: req.user._id})
+  .populate('author')
+  .populate('collaborators').exec()
   .then(function(result){
     res.send({
       success: true,
