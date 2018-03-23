@@ -32,7 +32,7 @@ router.post('/doc/:id/share', function(req, res, next){
     Document.findById(req.params.id)
     .then(function(doc, error){
       users.forEach(function(user){
-        if (user){
+        if (user && !doc.collaborators.includes(user._id)){
           doc.collaborators.push(user._id);
         }
       });
@@ -80,7 +80,9 @@ router.post('/doc/new', function(req, res, next){
 // given an document id, retrieves all data for that doc
 // to be displayed on client side
 router.get('/doc/:id', function(req, res, next){
-  Document.findById(req.params.id).populate('author').populate('collaborators')
+  Document.findById(req.params.id)
+  .populate('author', '-password')
+  .populate('collaborators', '-password')
   .then(function(doc, error){
     // If error, notify user that doc doesn't exist
 
@@ -126,9 +128,10 @@ router.delete('/doc/:id', function(req, res, next){
 
 
 router.get('/home', function(req, res, next){
-  Document.find({author: req.user._id})
-  .populate('author')
-  .populate('collaborators').exec()
+  // Document.find({author: req.user._id})
+  Document.find({collaborators: req.user._id})
+  .populate('author', '-password')
+  .populate('collaborators', '-password').exec()
   .then(function(result){
     res.send({
       success: true,
