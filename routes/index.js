@@ -73,10 +73,16 @@ router.post('/doc/:id', function(req, res, next){
     content: req.body.content,
     lastModified: Date()
     // add collaborators too
-  }).then(function(error){
+  }).then(function(result){
     // do something?
     res.send({
-      success: !error,
+      success: true,
+      result: result
+    });
+  })
+  .catch(function(error){
+    res.send({
+      success: false,
       error: error
     });
   });
@@ -85,7 +91,7 @@ router.post('/doc/:id', function(req, res, next){
 
 
 router.delete('/doc/:id', function(req, res, next){
-  Document.findByIdAndRemove(id)
+  Document.findByIdAndRemove(req.body.id)
   .then(function(result){
     res.send(result);
   });
