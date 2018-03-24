@@ -133,23 +133,30 @@ const sharedDocs = {}
 const currentState = {}
 
 io.on('connection', function (socket) {
-  socket.on('join-document', function (docAuth, cb) {
-    const {docId, userToken} = docAuth;
+  // socket.on('join-document', function (docAuth, cb) {
+  //   const {docId, userToken} = docAuth;
 
-    let secretToken = sharedDocs[docId];
-    if (!secretToken){
-      secretToken = sharedDocs[docId] = md5(docId + Math.random() + SALT);
-    }
+  //   let secretToken = sharedDocs[docId];
+  //   if (!secretToken){
+  //     secretToken = sharedDocs[docId] = md5(docId + Math.random() + SALT);
+  //   }
 
-    cb({secretToken, docId, state: currentState[docId]});
-    socket.join(secretToken);
+  //   cb({secretToken, docId, state: currentState[docId]});
+  //   socket.join(secretToken);
+  // });
+
+  // socket.on('document-save', function (message) {
+  //   const {secretToken, state, docId, userToken} = message;
+  //   currentState[docId] = state;
+  //   io.sockets.in(secretToken).emit('document-update', {state, docId, userToken});
+  // });
+
+  socket.on('sendToServer', function(raw){
+    io.sockets.emit('sendToClient', raw);
   });
 
-  socket.on('document-save', function (message) {
-    const {secretToken, state, docId, userToken} = message;
-    currentState[docId] = state;
-    io.sockets.in(secretToken).emit('document-update', {state, docId, userToken});
-  });
+
+  
 });
 
 
