@@ -120,7 +120,7 @@ router.post('/doc/:id', function(req, res, next){
 
 
 router.delete('/doc/:id', function(req, res, next){
-  Document.findByIdAndRemove(req.body.id)
+  Document.findByIdAndRemove(req.params.id)
   .then(function(result){
     res.send(result);
   });
