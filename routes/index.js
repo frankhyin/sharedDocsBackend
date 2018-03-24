@@ -147,4 +147,16 @@ router.get('/home', function(req, res, next){
 });
 
 
+router.get('/user/:email', function(req, res, next){
+  User.find({email: req.params.email})
+  .then(function(error, user){
+    if (user){
+      req.send({email: user.email});
+    }
+    else {
+      req.send({email: false});
+    }
+  });
+});
+
 module.exports = router;
