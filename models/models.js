@@ -1,10 +1,12 @@
-var mongoose = require('mongoose');
-var connect = process.env.MONGODB_URI;
-var Schema = mongoose.Schema;
+//Constructing Mongoose models and schemas. Handles document creation and retrieval from the database.
+const mongoose = require('mongoose');
+const connect = process.env.MONGODB_URI;
+const Schema = mongoose.Schema;
 
 mongoose.connect(connect);
 
-var userSchema = Schema({
+//What gets passed in an instance of a user.
+const userSchema = Schema({
     email: {
         type: String,
         required: true
@@ -19,7 +21,8 @@ var userSchema = Schema({
     }
 });
 
-var documentSchema = Schema({
+//What gets passed in an instance of a document.
+const documentSchema = Schema({
     title: {
         type: String,
         required: true
@@ -41,20 +44,20 @@ var documentSchema = Schema({
     },
     collaborators: [{
         type: Schema.Types.ObjectId,
-        ref: 'User'        
+        ref: 'User'
     }]
 });
 
+//For exporting.
+const User = mongoose.model('User', userSchema);
+const Document = mongoose.model('Document', documentSchema);
 
-var User = mongoose.model('User', userSchema);
-var Document = mongoose.model('Document', documentSchema);
 
-
-User.findOrCreate = function (searchObj, createObj, callback){
-    User.findOne(searchObj, function(err, user){
+User.findOrCreate = (searchObj, createObj, callback) => {
+    User.findOne(searchObj, (err, user) => {
         console.log(err, user);
         if (!user){
-            var new_user = new User(createObj);
+            let new_user = new User(createObj);
             new_user.save(callback);
         }
         else {
@@ -67,4 +70,3 @@ module.exports = {
     User: User,
     Document: Document
   };
-  
