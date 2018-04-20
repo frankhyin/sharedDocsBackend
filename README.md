@@ -2,6 +2,7 @@
 Before you do anything, do npm install on the project.
 
 To start your testing environment, create an env.sh. It should require three things: 
+
 1). Create a MLab database. Create a user and put that in the URI from MLab. 
 It should look something like this:
 ```export MONGODB_URI="mongodb://username:password@******.mlab.com:******/dfm"```
