@@ -19,4 +19,4 @@ Now that you have your env.sh created, source env.sh before you run the program.
 If successful, your terminal should say:
 ```Server listening on port 3000.```
 
-After you have the backend running, you should proceed to set up the [front end] (https://github.com/frankhyin/sharedDocs). 
+After you have the backend running, you should proceed to set up the [front end](https://github.com/frankhyin/sharedDocs). 
